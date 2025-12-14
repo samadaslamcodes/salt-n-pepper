@@ -9,8 +9,8 @@ const AdminDashboard = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const resResponse = await fetch('http://localhost:5000/api/reservations');
-            const ordResponse = await fetch('http://localhost:5000/api/orders');
+            const resResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/reservations`);
+            const ordResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/orders`);
 
             if (resResponse.ok) setReservations(await resResponse.json());
             if (ordResponse.ok) setOrders(await ordResponse.json());

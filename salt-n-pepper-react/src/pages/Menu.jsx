@@ -130,8 +130,8 @@ const Menu = ({ addToCart }) => {
     useEffect(() => {
         const fetchMenuData = async () => {
             try {
-                const specialsResponse = await fetch('http://localhost:5000/api/menu/specials');
-                const menuResponse = await fetch('http://localhost:5000/api/menu');
+                const specialsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/menu/specials`);
+                const menuResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/menu`);
 
                 if (specialsResponse.ok && menuResponse.ok) {
                     const specialsData = await specialsResponse.json();
