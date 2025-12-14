@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ORDB2DUT4",
+    "name": "Samad",
+    "phone": "03163086492",
+    "email": "slayergaming492@gmail.com",
+    "address": "hn0 c124 mehmoodabad no 2",
+    "city": "gujranwala",
+    "paymentMethod": "cod",
+    "instructions": "dasfasf",
+    "items": [
+      {
+        "id": 101,
+        "name": "Royal Lamb Biryani",
+        "price": 899,
+        "originalPrice": 1299,
+        "description": "Premium lamb cooked with aged basmati rice, saffron threads, and secret royal spices. A dish fit for royalty.",
+        "image": "/assets/chicken-biryani.png",
+        "badge": "Chef's Special",
+        "ingredients": [
+          "Premium Lamb",
+          "Aged Basmati",
+          "Saffron",
+          "Royal Spices"
+        ],
+        "prepTime": "45 min",
+        "rating": 4.9,
+        "reviews": 234,
+        "isSpecial": true,
+        "quantity": 1
+      },
+      {
+        "id": 102,
+        "name": "Signature BBQ Platter",
+        "price": 1999,
+        "originalPrice": 2799,
+        "description": "Our signature platter featuring 8 different BBQ items, each marinated for 24 hours in our secret blend.",
+        "image": "/assets/bbq-platter.png",
+        "badge": "Limited Time",
+        "ingredients": [
+          "Chicken Tikka",
+          "Seekh Kabab",
+          "Lamb Chops",
+          "Fish Tikka"
+        ],
+        "prepTime": "35 min",
+        "rating": 4.8,
+        "reviews": 189,
+        "isSpecial": true,
+        "quantity": 1
+      },
+      {
+        "id": 11,
+        "name": "Mutton Karahi",
+        "category": "karahi",
+        "price": 1800,
+        "description": "Tender mutton cooked in traditional karahi style with rich gravy",
+        "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop",
+        "spicy": true,
+        "prepTime": "40 min",
+        "rating": 4.7,
+        "reviews": 289,
+        "ingredients": [
+          "Mutton",
+          "Tomatoes",
+          "Spices",
+          "Ghee"
+        ],
+        "calories": 750,
+        "isSpecial": false,
+        "quantity": 1
+      },
+      {
+        "id": 19,
+        "name": "Chicken Chowmein",
+        "category": "chinese",
+        "price": 650,
+        "description": "Stir-fried noodles with vegetables and tender chicken strips",
+        "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
+        "prepTime": "15 min",
+        "rating": 4.5,
+        "reviews": 256,
+        "ingredients": [
+          "Noodles",
+          "Chicken",
+          "Vegetables",
+          "Soy"
+        ],
+        "calories": 480,
+        "isSpecial": false,
+        "quantity": 1
+      }
+    ],
+    "total": 5615,
+    "subtotal": 5348,
+    "tax": 267,
+    "deliveryFee": 0,
+    "createdAt": "2025-12-14T15:18:51.285Z",
+    "status": "Pending"
+  }
+]
