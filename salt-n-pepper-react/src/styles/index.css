@@ -80,6 +80,12 @@ a:hover {
     color: var(--gold);
 }
 
+/* Global Form Fixes */
+select option {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+}
+
 /* ========================================
    ANIMATIONS
    ======================================== */

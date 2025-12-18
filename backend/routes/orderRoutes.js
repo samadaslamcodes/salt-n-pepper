@@ -45,4 +45,26 @@ router.post('/', (req, res) => {
     }
 });
 
+// UPDATE order status
+router.put('/:id/status', (req, res) => {
+    try {
+        const orders = readData();
+        const orderId = req.params.id;
+        const { status } = req.body;
+
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        orders[orderIndex].status = status;
+        fs.writeFileSync(dataPath, JSON.stringify(orders, null, 2));
+
+        res.json({ success: true, order: orders[orderIndex] });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

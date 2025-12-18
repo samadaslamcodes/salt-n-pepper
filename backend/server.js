@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors({
@@ -21,6 +21,7 @@ const orderRoutes = require('./routes/orderRoutes');
 app.use('/api/menu', menuRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/auth', require('./routes/authRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

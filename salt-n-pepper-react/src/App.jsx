@@ -10,6 +10,7 @@ import Feedback from './pages/Feedback';
 import Menu from './pages/Menu';
 import BookDining from './pages/BookDining';
 import AdminDashboard from './pages/AdminDashboard';
+import Login from './pages/Login';
 import './styles/index.css';
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
       }
       return [...prevItems, { ...item, quantity: 1 }];
     });
-    setIsCartOpen(true);
+    // setIsCartOpen(true); // Don't open cart automatically
   };
 
   // Update quantity
@@ -68,6 +69,7 @@ function App() {
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/menu" element={<Menu addToCart={addToCart} />} />
             <Route path="/book-dining" element={<BookDining />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>

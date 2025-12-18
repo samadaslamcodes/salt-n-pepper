@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
     const [reservations, setReservations] = useState([]);
     const [orders, setOrders] = useState([]);
     const [activeTab, setActiveTab] = useState('reservations');
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const resResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/reservations`);
-            const ordResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/orders`);
+            const resResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/api/reservations`);
+            const ordResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/api/orders`);
 
             if (resResponse.ok) setReservations(await resResponse.json());
-            if (ordResponse.ok) setOrders(await ordResponse.json());
+            if (ordResponse.ok) {
+                const allOrders = await ordResponse.json();
+                const pendingOrders = allOrders.filter(order => order.status !== 'Delivered');
+                setOrders(pendingOrders);
+            }
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {
@@ -22,10 +28,43 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
+        const isAuthenticated = localStorage.getItem('isAdminAuthenticated');
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+
         fetchData();
         const interval = setInterval(fetchData, 30000); // Poll every 30 seconds
         return () => clearInterval(interval);
-    }, []);
+    }, [navigate]);
+
+    const handleLogout = () => {
+        if (window.confirm('Are you sure you want to log out?')) {
+            localStorage.removeItem('isAdminAuthenticated');
+            navigate('/login');
+        }
+    };
+
+    const handleOrderAction = async (orderId, newStatus) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/api/orders/${orderId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                // Refresh data to show updated status
+                fetchData();
+            } else {
+                alert('Failed to update order status');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('Error updating order status');
+        }
+    };
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleString();
@@ -35,10 +74,27 @@ const AdminDashboard = () => {
         <div className="admin-dashboard-page">
             <div className="admin-container">
                 <header className="admin-header">
-                    <h1>Admin Dashboard</h1>
-                    <button onClick={fetchData} className="refresh-btn">
-                        🔄 Refresh Data
-                    </button>
+                    <div className="header-left">
+                        <h1>Admin Dashboard</h1>
+                        <p className="status-text">👋 Welcome back, Samad</p>
+                    </div>
+                    <div className="header-actions">
+                        <button onClick={fetchData} className="refresh-btn" title="Refresh Data">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M23 4v6h-6"></path>
+                                <path d="M1 20v-6h6"></path>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </button>
+                        <button onClick={handleLogout} className="logout-btn" title="Logout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
                 </header>
 
                 <div className="admin-tabs">
@@ -118,6 +174,8 @@ const AdminDashboard = () => {
                                                 <th>Payment</th>
                                                 <th>Address</th>
                                                 <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -146,6 +204,21 @@ const AdminDashboard = () => {
                                                         <td><span className="payment-badge">{order.paymentMethod}</span></td>
                                                         <td className="address-cell">{order.address}, {order.city}</td>
                                                         <td>{formatDate(order.createdAt)}</td>
+                                                        <td>
+                                                            <span className={`status-badge ${order.status?.toLowerCase() || 'pending'}`}>
+                                                                {order.status || 'Pending'}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            {order.status !== 'Delivered' && (
+                                                                <button
+                                                                    className="action-btn"
+                                                                    onClick={() => handleOrderAction(order.id, 'Delivered')}
+                                                                >
+                                                                    Mark Delivered
+                                                                </button>
+                                                            )}
+                                                        </td>
                                                     </tr>
                                                 ))
                                             )}
@@ -160,7 +233,7 @@ const AdminDashboard = () => {
 
             <style jsx>{`
                 .admin-dashboard-page {
-                    padding: 80px 20px;
+                    padding: 130px 20px 80px;
                     background: #1a1a1a;
                     min-height: 100vh;
                     color: white;
@@ -172,19 +245,60 @@ const AdminDashboard = () => {
                 .admin-header {
                     display: flex;
                     justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 30px;
+                    align-items: flex-end;
+                    margin-bottom: 40px;
+                    border-bottom: 1px solid #333;
+                    padding-bottom: 20px;
+                }
+                .header-left h1 {
+                    margin-bottom: 5px;
+                    color: #d4af37;
+                }
+                .status-text {
+                    color: #888;
+                    margin: 0;
+                    font-size: 0.9rem;
+                }
+                .header-actions {
+                    display: flex;
+                    gap: 12px;
                 }
                 .refresh-btn {
-                    background: #333;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
+                    background: #2a2a2a;
+                    color: #aaa;
+                    border: 1px solid #444;
+                    width: 42px;
+                    height: 42px;
                     border-radius: 8px;
                     cursor: pointer;
                     transition: 0.3s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
-                .refresh-btn:hover { background: #444; }
+                .refresh-btn:hover {
+                    background: #333;
+                    color: white;
+                    border-color: #666;
+                }
+                .logout-btn {
+                    background: rgba(211, 47, 47, 0.1);
+                    color: #ef5350;
+                    border: 1px solid rgba(211, 47, 47, 0.3);
+                    padding: 0 20px;
+                    height: 42px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-weight: 500;
+                }
+                .logout-btn:hover {
+                    background: rgba(211, 47, 47, 0.2);
+                    border-color: #ef5350;
+                }
                 
                 .admin-tabs {
                     display: flex;
@@ -262,6 +376,26 @@ const AdminDashboard = () => {
                 .address-cell { max-width: 200px; font-size: 0.9em; color: #aaa; }
                 .empty-cell { text-align: center; padding: 40px; color: #666; }
                 .order-items-list { font-size: 0.9em; color: #ddd; }
+                
+                .status-badge.pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; padding: 4px 8px; border-radius: 4px; }
+                .status-badge.delivered { background: rgba(76, 175, 80, 0.1); color: #4caf50; padding: 4px 8px; border-radius: 4px; }
+
+                .action-btn {
+                    background: #d4af37;
+                    color: black;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.85em;
+                    transition: 0.2s;
+                    white-space: nowrap;
+                }
+                .action-btn:hover {
+                    background: #b5952f;
+                    transform: translateY(-1px);
+                }
             `}</style>
         </div>
     );

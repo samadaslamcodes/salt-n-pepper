@@ -1,19 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
-const Menu = ({ addToCart }) => {
-    const [activeCategory, setActiveCategory] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [showQuickView, setShowQuickView] = useState(false);
-    const [itemRatings, setItemRatings] = useState({});
-    const [addedItems, setAddedItems] = useState([]);
-    const [specialTimeLeft, setSpecialTimeLeft] = useState({ hours: 5, minutes: 23, seconds: 47 });
-    const menuRef = useRef(null);
+const CountdownTimer = () => {
+    const [timeLeft, setTimeLeft] = useState({ hours: 5, minutes: 23, seconds: 47 });
 
-    // Countdown timer for chef's special
     useEffect(() => {
         const timer = setInterval(() => {
-            setSpecialTimeLeft(prev => {
+            setTimeLeft(prev => {
                 let { hours, minutes, seconds } = prev;
                 seconds--;
                 if (seconds < 0) {
@@ -34,6 +26,38 @@ const Menu = ({ addToCart }) => {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+
+    return (
+        <div className="countdown-timer">
+            <span className="timer-label">Offer ends in:</span>
+            <div className="timer-boxes">
+                <div className="timer-box">
+                    <span className="timer-value">{String(timeLeft.hours).padStart(2, '0')}</span>
+                    <span className="timer-unit">HRS</span>
+                </div>
+                <span className="timer-separator">:</span>
+                <div className="timer-box">
+                    <span className="timer-value">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                    <span className="timer-unit">MIN</span>
+                </div>
+                <span className="timer-separator">:</span>
+                <div className="timer-box">
+                    <span className="timer-value">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                    <span className="timer-unit">SEC</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const Menu = ({ addToCart }) => {
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [showQuickView, setShowQuickView] = useState(false);
+    const [itemRatings, setItemRatings] = useState({});
+    const [addedItems, setAddedItems] = useState([]);
+    const menuRef = useRef(null);
 
     // Menu Categories with unique icons
     const categories = [
@@ -130,8 +154,8 @@ const Menu = ({ addToCart }) => {
     useEffect(() => {
         const fetchMenuData = async () => {
             try {
-                const specialsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/menu/specials`);
-                const menuResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/menu`);
+                const specialsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/api/menu/specials`);
+                const menuResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/api/menu`);
 
                 if (specialsResponse.ok && menuResponse.ok) {
                     const specialsData = await specialsResponse.json();
@@ -239,26 +263,9 @@ const Menu = ({ addToCart }) => {
                             <p>Limited time exclusive dishes</p>
                         </div>
                     </div>
-                    <div className="countdown-timer">
-                        <span className="timer-label">Offer ends in:</span>
-                        <div className="timer-boxes">
-                            <div className="timer-box">
-                                <span className="timer-value">{String(specialTimeLeft.hours).padStart(2, '0')}</span>
-                                <span className="timer-unit">HRS</span>
-                            </div>
-                            <span className="timer-separator">:</span>
-                            <div className="timer-box">
-                                <span className="timer-value">{String(specialTimeLeft.minutes).padStart(2, '0')}</span>
-                                <span className="timer-unit">MIN</span>
-                            </div>
-                            <span className="timer-separator">:</span>
-                            <div className="timer-box">
-                                <span className="timer-value">{String(specialTimeLeft.seconds).padStart(2, '0')}</span>
-                                <span className="timer-unit">SEC</span>
-                            </div>
-                        </div>
-                    </div>
+                    <CountdownTimer />
                 </div>
+
 
                 <div className="chefs-special-cards">
                     {chefsSpecials.map(item => (
@@ -298,10 +305,10 @@ const Menu = ({ addToCart }) => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div >
 
             {/* Search Bar */}
-            <div className="menu-search-container">
+            < div className="menu-search-container" >
                 <div className="menu-search">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -317,10 +324,10 @@ const Menu = ({ addToCart }) => {
                         <button className="clear-search" onClick={() => setSearchQuery('')}>×</button>
                     )}
                 </div>
-            </div>
+            </div >
 
             {/* Unique Radial Category Selector */}
-            <div className="category-selector">
+            < div className="category-selector" >
                 <div className="category-wheel">
                     {categories.map((category, index) => (
                         <button
@@ -335,150 +342,158 @@ const Menu = ({ addToCart }) => {
                         </button>
                     ))}
                 </div>
-            </div>
+            </div >
 
             {/* Results Count */}
-            <div className="results-info">
+            < div className="results-info" >
                 <span className="results-count">{filteredItems.length} dishes found</span>
-                {activeCategory !== 'all' && (
-                    <button className="clear-filter" onClick={() => setActiveCategory('all')}>
-                        Clear filter ×
-                    </button>
-                )}
-            </div>
+                {
+                    activeCategory !== 'all' && (
+                        <button className="clear-filter" onClick={() => setActiveCategory('all')}>
+                            Clear filter ×
+                        </button>
+                    )
+                }
+            </div >
 
             {/* Menu Grid with 3D Cards */}
-            <div className="menu-grid" ref={menuRef}>
-                {filteredItems.map((item, index) => (
-                    <div
-                        className={`menu-card-3d ${addedItems.includes(item.id) ? 'pulse' : ''}`}
-                        key={item.id}
-                        style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                        <div className="card-inner">
-                            {/* Front of Card */}
-                            <div className="card-front">
-                                <div className="menu-card-image">
-                                    <img src={item.image} alt={item.name} />
-                                    <div className="image-overlay">
-                                        <button className="quick-view-btn" onClick={() => openQuickView(item)}>
-                                            👁️ Quick View
-                                        </button>
-                                    </div>
-                                    {item.popular && <span className="badge popular">🔥 Popular</span>}
-                                    {item.spicy && <span className="badge spicy">🌶️</span>}
-                                    <span className="prep-badge">⏱️ {item.prepTime}</span>
-                                </div>
-                                <div className="menu-card-content">
-                                    {renderStars(item.rating, item.id)}
-                                    <h3>{item.name}</h3>
-                                    <p className="menu-description">{item.description}</p>
-                                    <div className="menu-card-footer">
-                                        <div className="price-section">
-                                            <span className="menu-price">Rs. {item.price}</span>
-                                            <span className="calories">{item.calories} cal</span>
+            < div className="menu-grid" ref={menuRef} >
+                {
+                    filteredItems.map((item, index) => (
+                        <div
+                            className={`menu-card-3d ${addedItems.includes(item.id) ? 'pulse' : ''}`}
+                            key={item.id}
+                            style={{ animationDelay: `${index * 0.05}s` }}
+                        >
+                            <div className="card-inner">
+                                {/* Front of Card */}
+                                <div className="card-front">
+                                    <div className="menu-card-image">
+                                        <img src={item.image} alt={item.name} />
+                                        <div className="image-overlay">
+                                            <button className="quick-view-btn" onClick={() => openQuickView(item)}>
+                                                👁️ Quick View
+                                            </button>
                                         </div>
-                                        <button
-                                            className={`add-to-cart-btn ${addedItems.includes(item.id) ? 'added' : ''}`}
-                                            onClick={() => handleAddToCart(item)}
-                                        >
-                                            {addedItems.includes(item.id) ? (
-                                                <span className="added-text">✓</span>
-                                            ) : (
-                                                <>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <path d="M12 5v14M5 12h14"></path>
-                                                    </svg>
-                                                    <span>Add</span>
-                                                </>
-                                            )}
-                                        </button>
+                                        {item.popular && <span className="badge popular">🔥 Popular</span>}
+                                        {item.spicy && <span className="badge spicy">🌶️</span>}
+                                        <span className="prep-badge">⏱️ {item.prepTime}</span>
+                                    </div>
+                                    <div className="menu-card-content">
+                                        {renderStars(item.rating, item.id)}
+                                        <h3>{item.name}</h3>
+                                        <p className="menu-description">{item.description}</p>
+                                        <div className="menu-card-footer">
+                                            <div className="price-section">
+                                                <span className="menu-price">Rs. {item.price}</span>
+                                                <span className="calories">{item.calories} cal</span>
+                                            </div>
+                                            <button
+                                                className={`add-to-cart-btn ${addedItems.includes(item.id) ? 'added' : ''}`}
+                                                onClick={() => handleAddToCart(item)}
+                                            >
+                                                {addedItems.includes(item.id) ? (
+                                                    <span className="added-text">✓</span>
+                                                ) : (
+                                                    <>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <path d="M12 5v14M5 12h14"></path>
+                                                        </svg>
+                                                        <span>Add</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))
+                }
+            </div >
 
-            {filteredItems.length === 0 && (
-                <div className="no-results">
-                    <span className="no-results-icon">🔍</span>
-                    <h3>No dishes found</h3>
-                    <p>Try a different search term or category</p>
-                    <button onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}>
-                        Show all dishes
-                    </button>
-                </div>
-            )}
+            {
+                filteredItems.length === 0 && (
+                    <div className="no-results">
+                        <span className="no-results-icon">🔍</span>
+                        <h3>No dishes found</h3>
+                        <p>Try a different search term or category</p>
+                        <button onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}>
+                            Show all dishes
+                        </button>
+                    </div>
+                )
+            }
 
             {/* Quick View Modal */}
-            {showQuickView && selectedItem && (
-                <div className="quick-view-overlay" onClick={() => setShowQuickView(false)}>
-                    <div className="quick-view-modal" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-modal" onClick={() => setShowQuickView(false)}>×</button>
+            {
+                showQuickView && selectedItem && (
+                    <div className="quick-view-overlay" onClick={() => setShowQuickView(false)}>
+                        <div className="quick-view-modal" onClick={(e) => e.stopPropagation()}>
+                            <button className="close-modal" onClick={() => setShowQuickView(false)}>×</button>
 
-                        <div className="modal-content">
-                            <div className="modal-image">
-                                <img src={selectedItem.image} alt={selectedItem.name} />
-                                {selectedItem.popular && <span className="modal-badge">🔥 Popular Choice</span>}
-                            </div>
-
-                            <div className="modal-details">
-                                <div className="modal-rating">
-                                    {renderStars(selectedItem.rating, selectedItem.id, true)}
-                                    <span className="reviews">{selectedItem.reviews} reviews</span>
+                            <div className="modal-content">
+                                <div className="modal-image">
+                                    <img src={selectedItem.image} alt={selectedItem.name} />
+                                    {selectedItem.popular && <span className="modal-badge">🔥 Popular Choice</span>}
                                 </div>
 
-                                <h2>{selectedItem.name}</h2>
-                                <p className="modal-description">{selectedItem.description}</p>
+                                <div className="modal-details">
+                                    <div className="modal-rating">
+                                        {renderStars(selectedItem.rating, selectedItem.id, true)}
+                                        <span className="reviews">{selectedItem.reviews} reviews</span>
+                                    </div>
 
-                                <div className="modal-meta">
-                                    <div className="meta-item">
-                                        <span className="meta-icon">⏱️</span>
-                                        <span>{selectedItem.prepTime}</span>
-                                    </div>
-                                    <div className="meta-item">
-                                        <span className="meta-icon">🔥</span>
-                                        <span>{selectedItem.calories} calories</span>
-                                    </div>
-                                    <div className="meta-item">
-                                        <span className="meta-icon">{selectedItem.spicy ? '🌶️' : '😊'}</span>
-                                        <span>{selectedItem.spicy ? 'Spicy' : 'Mild'}</span>
-                                    </div>
-                                </div>
+                                    <h2>{selectedItem.name}</h2>
+                                    <p className="modal-description">{selectedItem.description}</p>
 
-                                <div className="modal-ingredients">
-                                    <h4>Ingredients</h4>
-                                    <div className="ingredients-list">
-                                        {selectedItem.ingredients?.map((ing, i) => (
-                                            <span key={i} className="ingredient-tag">{ing}</span>
-                                        ))}
+                                    <div className="modal-meta">
+                                        <div className="meta-item">
+                                            <span className="meta-icon">⏱️</span>
+                                            <span>{selectedItem.prepTime}</span>
+                                        </div>
+                                        <div className="meta-item">
+                                            <span className="meta-icon">🔥</span>
+                                            <span>{selectedItem.calories} calories</span>
+                                        </div>
+                                        <div className="meta-item">
+                                            <span className="meta-icon">{selectedItem.spicy ? '🌶️' : '😊'}</span>
+                                            <span>{selectedItem.spicy ? 'Spicy' : 'Mild'}</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="modal-footer">
-                                    <div className="modal-price">
-                                        <span className="price-label">Price</span>
-                                        <span className="price-value">Rs. {selectedItem.price}</span>
+                                    <div className="modal-ingredients">
+                                        <h4>Ingredients</h4>
+                                        <div className="ingredients-list">
+                                            {selectedItem.ingredients?.map((ing, i) => (
+                                                <span key={i} className="ingredient-tag">{ing}</span>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <button
-                                        className="modal-add-btn"
-                                        onClick={() => {
-                                            handleAddToCart(selectedItem);
-                                            setShowQuickView(false);
-                                        }}
-                                    >
-                                        Add to Cart
-                                        <span className="btn-arrow">→</span>
-                                    </button>
+
+                                    <div className="modal-footer">
+                                        <div className="modal-price">
+                                            <span className="price-label">Price</span>
+                                            <span className="price-value">Rs. {selectedItem.price}</span>
+                                        </div>
+                                        <button
+                                            className="modal-add-btn"
+                                            onClick={() => {
+                                                handleAddToCart(selectedItem);
+                                                setShowQuickView(false);
+                                            }}
+                                        >
+                                            Add to Cart
+                                            <span className="btn-arrow">→</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

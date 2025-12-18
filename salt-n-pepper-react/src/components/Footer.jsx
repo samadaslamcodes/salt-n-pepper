@@ -44,13 +44,11 @@ const Footer = () => {
                 <p className="footer-links">23-Usman Block, New</p>
                 <p className="footer-links">GardenTown, Lahore, Pakistan</p>
                 <p className="headings">Head office number</p>
-                <p className="footer-links">+92 42 358 509 31</p>
-                <p className="footer-links">+92 42 358 509 30</p>
+                <p className="footer-links">+92 316 3086 492</p>
                 <p className="headings">Email Address</p>
                 <p className="footer-links">snpfood@brain.net.pk</p>
                 <p className="headings">Free delivery number</p>
-                <p className="footer-links">+92 42 111 100 678</p>
-                <p className="footer-links">+92 03 111 444 610</p>
+                <p className="footer-links">+92 316 3086 492</p>
             </div>
 
             <div>

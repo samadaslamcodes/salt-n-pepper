@@ -235,9 +235,7 @@ const Feedback = () => {
                     <br />
                     <img src="/assets/map-pic.jpeg" alt="Map" style={{ width: '100%', borderRadius: '5px' }} />
                     <h3 className="fd-4">Head Office</h3>
-                    <p className="para-1">Ph: 051-2604904-6</p>
-                    <p className="para-1">Ph: +92-42-35850930</p>
-                    <p className="para-1">Ph: +92 42 111-100-678</p>
+                    <p className="para-1">Ph: +92 316 3086 492</p>
                     <p className="para-1">snpfood@brain.net.pk</p>
                 </div>
             </div>
